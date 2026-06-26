@@ -18,9 +18,7 @@ export function useRegistry() {
     async function load() {
       try {
         setLoading(true)
-
         const data = await getRegistryPairs()
-
         setPairs(data)
       } catch (err: any) {
         setError(err.message || "Failed to load registry")

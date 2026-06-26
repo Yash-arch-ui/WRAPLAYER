@@ -7,7 +7,7 @@ export const publicClient = createPublicClient({
     transport: http(),
 
 })
-export const REGISTRY_ADDRESS ="0x380ee13b0039852314fFF513821729B052D06a71"
+export const REGISTRY_ADDRESS ="0x2f0750Bbb0A246059d80e94c454586a7F27a128e"
 export const registryAbi = [{
 type: "function",
     name: "getTokenConfidentialTokenPairs",
