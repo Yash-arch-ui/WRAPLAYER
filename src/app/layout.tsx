@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import { Dancing_Script } from "next/font/google"; // <-- Imports right from Google Fonts natively
 import "./globals.css";
+import "@rainbow-me/rainbowkit/styles.css";
+import  "./providers";
+import Providers from "./providers";
 
 // Configure the cursive font
 const dancingScript = Dancing_Script({
@@ -11,7 +14,7 @@ const dancingScript = Dancing_Script({
 
 export const metadata: Metadata = {
   title: "WrapLayer",
-  description: "Zama Wrapper Registry",
+  description: "Zama Wrapper Registry-Operating with Secure Confidential Registry",
 };
 
 export default function RootLayout({
@@ -21,7 +24,10 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={dancingScript.variable}>
-      <body>{children}</body>
+      <body>
+        <Providers>
+          {children}
+          </Providers></body>
     </html>
   );
 }

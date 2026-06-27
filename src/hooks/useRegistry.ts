@@ -1,6 +1,6 @@
 "use client"
 
-import { useEffect, useState } from "react"
+import { useEffect, useState } from "react";
 import { getRegistryPairs } from "@/lib/registry"
 
 export type TokenPair = {

@@ -1,8 +1,11 @@
 "use client";
 
+import ConnectWallet from "@/components/ConnectWallet";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
+import { useAccount } from "wagmi"; // ─── STEP 3: Get Connected Wallet
 import { getRegistryPairs } from "@/lib/registry";
+import { getTokenInfo } from "@/lib/token"; // ─── Import your Step 2 helper
 import Button from "@/components/ui/Button";
 import { 
   Shield, 
@@ -11,32 +14,54 @@ import {
   ArrowRight, 
   Activity, 
   ChevronDown,
-  Lock
+  Lock,
+  Coins,
+  Wallet
 } from "lucide-react";
 
-type TokenPair = {
+// Strongly-typed model for our asset metrics data
+type EnrichedTokenPair = {
   tokenAddress: `0x${string}`;
   confidentialTokenAddress: `0x${string}`;
   isValid: boolean;
+  name: string;
+  decimals: number;
+  balance: string;
 };
 
 export default function Home() {
-  const [pairs, setPairs] = useState<TokenPair[]>([]);
+  const { address, isConnected } = useAccount(); // Active blockchain account hook instance
+  const [pairs, setPairs] = useState<EnrichedTokenPair[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    async function loadPairs() {
+    async function loadAndEnrichPairs() {
       try {
-        const data = await getRegistryPairs();
-        setPairs(data);
+        setLoading(true);
+        // 1. Fetch the hardcoded raw core address data array
+        const rawPairs = await getRegistryPairs();
+        
+        // 2. ─── STEP 4: Asynchronously fetch live contract metadata ───
+        const enrichedData = await Promise.all(
+          rawPairs.map(async (pair) => {
+            const tokenMetadata = await getTokenInfo(pair.tokenAddress, address);
+            return {
+              ...pair,
+              ...tokenMetadata // Merges live name, decimals, and balances safely into state object
+            };
+          })
+        );
+
+        setPairs(enrichedData);
       } catch (error) {
-        console.error("Failed to fetch registry:", error);
+        console.error("Failed to compile or enrich token registry:", error);
       } finally {
         setLoading(false);
       }
     }
-    loadPairs();
-  }, []);
+    
+    loadAndEnrichPairs();
+  }, [address]); // ⚡ Re-triggers instantly whenever a user connects or switches a wallet account!
 
   // Animation variants for staggered load-in
   const fadeInContainer = {
@@ -72,9 +97,10 @@ export default function Home() {
 
       {/* --- MAC-STYLE FLOATING NAVBAR --- */}
       <header className="sticky top-4 z-50 mx-auto max-w-5xl px-4">
-        <span className="text-2xl font-bold tracking-wide text-white font-[family-name:var(--font-cursive)]">
-  WrapLayer
-</span>
+        <div className="mb-2 flex justify-end">
+          <ConnectWallet />
+        </div>
+        
         <nav className="flex items-center justify-between rounded-2xl border border-white/5 bg-slate-900/40 px-6 py-3 backdrop-blur-xl shadow-xl">
           <div className="flex items-center gap-2">
             <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gradient-to-br from-emerald-400 to-teal-500 shadow-md">
@@ -103,23 +129,19 @@ export default function Home() {
           animate="show"
           className="space-y-6"
         >
-          {/* Animated Accent Badge */}
           <motion.div variants={fadeInUpItem} className="inline-flex items-center gap-2 rounded-full border border-emerald-500/30 bg-emerald-500/10 px-4 py-1.5 text-xs font-semibold text-emerald-400 backdrop-blur-md">
             <Lock className="h-3 w-3 animate-pulse" /> Fully Homomorphic Encryption Built-In
           </motion.div>
 
-          {/* Main Epic Catchy Title */}
           <motion.h1 variants={fadeInUpItem} className="mx-auto max-w-3xl bg-gradient-to-b from-white via-slate-100 to-slate-400 bg-clip-text text-4xl font-extrabold tracking-tight text-transparent sm:text-6xl md:text-7xl">
             Operating with Secure <br />
             <span className="bg-gradient-to-r from-emerald-400 via-teal-400 to-cyan-400 bg-clip-text">Confidential Registries</span>
           </motion.h1>
 
-          {/* The Slogan Description */}
           <motion.p variants={fadeInUpItem} className="mx-auto max-w-xl text-base text-slate-400 sm:text-lg md:text-xl">
             Wrap Layer seamlessly synthesizes standard assets into fully private tokens. Wrap, view, and decrypt transaction parameters without shedding public balance records.
           </motion.p>
 
-          {/* Call to Actions with Framer Scale */}
           <motion.div variants={fadeInUpItem} className="flex flex-wrap items-center justify-center gap-4 pt-4">
             <a href="#registry-section">
               <Button className="bg-gradient-to-r from-emerald-500 to-teal-500 px-6 py-3.5 font-bold shadow-lg shadow-emerald-500/10 hover:brightness-110">
@@ -132,7 +154,6 @@ export default function Home() {
           </motion.div>
         </motion.div>
 
-        {/* Scroll Indicator */}
         <motion.div 
           animate={{ y: [0, 8, 0] }}
           transition={{ duration: 2, repeat: Infinity }}
@@ -171,14 +192,14 @@ export default function Home() {
         </div>
       </section>
 
-      {/* --- LIVE REGISTRY WORKSPACE (FORMERLY MAIN PAGE) --- */}
+      {/* --- LIVE REGISTRY WORKSPACE --- */}
       <section id="registry-section" className="mx-auto max-w-5xl px-6 py-16 md:py-24">
-        <span className="font-[family-name:var(--font-cursive)] font-normal tracking-wide normal-case bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text pr-2">
-  Confidential Registries
-</span>
         <div className="mb-10 flex flex-col md:flex-row md:items-end md:justify-between gap-4 border-b border-white/5 pb-6">
           <div>
-            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl text-white">Live Wrapper Registry</h2>
+            <span className="font-[family-name:var(--font-cursive)] font-normal tracking-wide normal-case bg-gradient-to-r from-emerald-400 via-teal-300 to-cyan-400 bg-clip-text pr-2">
+              Confidential Registries
+            </span>
+            <h2 className="text-2xl font-bold tracking-tight sm:text-3xl text-white mt-1">Live Wrapper Registry</h2>
             <p className="mt-1 text-sm text-slate-400">Interact and wrap on active cryptographic token combinations directly below.</p>
           </div>
           <div className="inline-flex items-center gap-2 rounded-xl bg-slate-900 border border-white/5 px-4 py-2.5 text-sm">
@@ -207,7 +228,8 @@ export default function Home() {
                 key={pair.confidentialTokenAddress}
                 className="group relative rounded-3xl border border-white/10 bg-white/[0.02] p-6 backdrop-blur-xl transition-all duration-300 hover:-translate-y-1 hover:border-white/20 hover:bg-white/[0.04] hover:shadow-[0_10px_40px_rgba(16,185,129,0.05)]"
               >
-                <div className="flex items-center justify-between mb-6">
+                {/* Card Header Status */}
+                <div className="flex items-center justify-between mb-5">
                   <span className="text-xs font-semibold tracking-wider text-slate-500 uppercase">
                     Pair #{index + 1}
                   </span>
@@ -223,6 +245,31 @@ export default function Home() {
                   </span>
                 </div>
 
+                {/* ─── LIVE TOKEN METADATA LAYER WORKSPACE ─── */}
+                <div className="mb-6 p-4 rounded-2xl bg-black/40 border border-white/5 shadow-inner">
+                  <div className="flex items-center justify-between border-b border-white/5 pb-3 mb-3">
+                    <div className="flex items-center gap-2">
+                      <Coins className="h-4 w-4 text-emerald-400" />
+                      <h3 className="text-base font-bold tracking-tight text-white truncate max-w-[180px]">
+                        {pair.name}
+                      </h3>
+                    </div>
+                    <span className="text-[10px] text-slate-400 bg-slate-900 border border-white/5 px-2 py-0.5 rounded-md uppercase font-mono">
+                      {pair.decimals} Decimals
+                    </span>
+                  </div>
+
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs text-slate-400 flex items-center gap-1">
+                      <Wallet size={12} className="text-slate-500" /> Live Balance
+                    </span>
+                    <span className="text-sm font-mono font-bold text-slate-200">
+                      {isConnected ? pair.balance : "0.00"}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Cryptographic Ledger Registry Addresses */}
                 <div className="space-y-4 mb-8">
                   <div>
                     <span className="block text-xs font-medium text-slate-400 mb-1">Public Token Address</span>
@@ -238,17 +285,19 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* --- CONSOLIDATED ACTION BUTTONS --- */}
+                {/* Action Suite Context */}
                 <div className="flex flex-col gap-2.5 pt-4 border-t border-white/5">
-                  <Button className="w-full justify-center bg-gradient-to-r from-emerald-500 to-teal-500 hover:brightness-110">
-                    Connect Wallet
-                  </Button>
+                  {!isConnected && (
+                    <div className="w-full">
+                      <ConnectWallet />
+                    </div>
+                  )}
                   
                   <div className="grid grid-cols-2 gap-2">
-                    <Button variant="secondary" className="w-full justify-center border border-white/10 bg-white/5 hover:bg-white/10">
+                    <Button variant="secondary" disabled={!isConnected} className="w-full justify-center border border-white/10 bg-white/5 hover:bg-white/10 disabled:opacity-20">
                       Decrypt Balance
                     </Button>
-                    <Button variant="danger" className="w-full justify-center bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20">
+                    <Button variant="danger" disabled={!isConnected} className="w-full justify-center bg-rose-500/10 text-rose-400 border border-rose-500/20 hover:bg-rose-500/20 disabled:opacity-20">
                       Unwrap
                     </Button>
                   </div>
