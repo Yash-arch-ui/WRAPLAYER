@@ -13,6 +13,7 @@ import { useQuery } from "@tanstack/react-query";
 import { createPublicClient, http } from "viem";
 import { sepolia } from "viem/chains";
 import {toast} from "sonner";
+
 const publicClient = createPublicClient({
   chain: sepolia,
   transport: http(import.meta.env.VITE_ALCHEMY_SEPOLIA_URL ),
@@ -161,12 +162,28 @@ function WrapperCard({ p, i }: { p: RegistryTokenPair; i: number }) {
     setTimeout(() => setCopied(null), 1200);
   };
    
-  const getAmountBigInt = () => {
-  const FHE_DECIMALS = 6; 
+   const getShieldAmount = () => {
   const [integer, fraction = ""] = amount.split(".");
-  const fractionPart = fraction.padEnd(FHE_DECIMALS, "0").slice(0, FHE_DECIMALS);
+  const decimals = Number(p.decimals);
+
+  const fractionPart = fraction
+    .padEnd(decimals, "0")
+    .slice(0, decimals);
+
   return BigInt(integer + fractionPart);
-  };
+};
+
+const getUnshieldAmount = () => {
+  const CONFIDENTIAL_DECIMALS = 6;
+
+  const [integer, fraction = ""] = amount.split(".");
+
+  const fractionPart = fraction
+    .padEnd(CONFIDENTIAL_DECIMALS, "0")
+    .slice(0, CONFIDENTIAL_DECIMALS);
+
+  return BigInt(integer + fractionPart);
+};
 
   const { data: allowance = 0n, refetch } = useQuery({
     queryKey: ['allowance', p.tokenAddress, userAddress, p.confidentialTokenAddress],
@@ -203,15 +220,15 @@ function WrapperCard({ p, i }: { p: RegistryTokenPair; i: number }) {
     enabled: !!userAddress,
   });
 
-  const needsApproval = allowance < getAmountBigInt();
 
+  const needsApproval = allowance < getShieldAmount();
   const handleApprove = async () => {
 try {
     const txHash = await writeContractAsync({
       address: p.tokenAddress as `0x${string}`,
       abi: erc20Abi,
       functionName: "approve",
-      args: [p.confidentialTokenAddress as `0x${string}`, getAmountBigInt()],
+      args: [p.confidentialTokenAddress as `0x${string}`, getShieldAmount()],
     });
     
     toast.success("Transaction submitted...");
@@ -321,7 +338,7 @@ try {
       onClick={async () => {
         setIsShielding(true);
         try {
-          await shield(getAmountBigInt());
+          await shield(getShieldAmount());
           toast.success("Assets successfully shielded!");
           await refetch();
         } catch (err) {
@@ -339,7 +356,7 @@ try {
           onClick={async () => {
             setIsUnshielding(true);
             try {
-              await unshield(getAmountBigInt());
+              await unshield(getUnshieldAmount());
               toast.success("Assets successfully unshielded!");
             } catch (err) {
               console.error("Unshield failed:", err);
