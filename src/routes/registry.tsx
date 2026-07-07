@@ -223,27 +223,38 @@ const getUnshieldAmount = () => {
 
   const needsApproval = allowance < getShieldAmount();
   const handleApprove = async () => {
-try {
+  try {
     const txHash = await writeContractAsync({
       address: p.tokenAddress as `0x${string}`,
       abi: erc20Abi,
       functionName: "approve",
-      args: [p.confidentialTokenAddress as `0x${string}`, getShieldAmount()],
+      args: [
+        p.confidentialTokenAddress as `0x${string}`,
+        getShieldAmount(),
+      ],
     });
-    
-    toast.success("Transaction submitted...");
 
-    setTimeout(async () => {
-      await refetch(); 
-      toast.info("Allowance updated.");
-    }, 1000); 
+    toast.success("Approval transaction submitted...");
 
+    // Wait until the transaction is mined
+    await publicClient.waitForTransactionReceipt({
+      hash: txHash,
+    });
+
+    // Refresh allowance
+    await refetch();
+
+    toast.success("Allowance approved!");
   } catch (err: any) {
     console.error("Approval failed:", err);
-    const errMsg = err?.shortMessage || err?.message || "Approval signature rejected.";
-    toast.error(errMsg);
+
+    toast.error(
+      err?.shortMessage ??
+        err?.message ??
+        "Approval signature rejected."
+    );
   }
-  };
+};
 
 
 
