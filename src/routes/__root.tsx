@@ -12,7 +12,7 @@ import { useEffect, type ReactNode } from "react";
 import appCss from "../styles.css?url";
 import { reportLovableError } from "../lib/error-reporting";
 import { TooltipProvider } from "@radix-ui/react-tooltip";
-
+import { Toaster } from "sonner";
 
 function NotFoundComponent() {
   return (
@@ -129,7 +129,14 @@ function RootComponent() {
 <QueryClientProvider client={queryClient}>
       <Providers>
         <TooltipProvider>
+
           <Outlet />
+             <Toaster
+            richColors
+            position="top-right"
+            closeButton
+            expand={false}
+          />
         </TooltipProvider>
       </Providers>
     </QueryClientProvider>
