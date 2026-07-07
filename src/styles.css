@@ -1,0 +1,169 @@
+@import "tailwindcss" source(none);
+@source "../src";
+@import "tw-animate-css";
+@import "@fontsource-variable/geist";
+@import "@fontsource-variable/geist-mono";
+
+@custom-variant dark (&:is(.dark *));
+
+@theme inline {
+  --font-sans: "Geist Variable", ui-sans-serif, system-ui, sans-serif;
+  --font-mono: "Geist Mono Variable", ui-monospace, "SF Mono", monospace;
+
+  --radius-sm: calc(var(--radius) - 8px);
+  --radius-md: calc(var(--radius) - 4px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 8px);
+  --radius-2xl: calc(var(--radius) + 16px);
+
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-purple: var(--purple);
+  --color-teal: var(--primary);
+  --color-blue: var(--secondary);
+}
+
+:root {
+  --radius: 1.5rem;
+  /* Dark palette per spec */
+  --background: #040816;
+  --foreground: #F8FAFC;
+  --card: #0B1220;
+  --card-foreground: #F8FAFC;
+  --popover: #0B1220;
+  --popover-foreground: #F8FAFC;
+  --primary: #5EEAD4;
+  --primary-foreground: #04121A;
+  --secondary: #60A5FA;
+  --secondary-foreground: #04121A;
+  --muted: #0B1220;
+  --muted-foreground: #94A3B8;
+  --accent: #0F1A2E;
+  --accent-foreground: #F8FAFC;
+  --destructive: #F87171;
+  --destructive-foreground: #F8FAFC;
+  --border: #1E293B;
+  --input: #1E293B;
+  --ring: #5EEAD4;
+  --purple: #8B5CF6;
+}
+
+.dark { color-scheme: dark; }
+
+html, body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  font-feature-settings: "ss01", "cv11";
+}
+
+@layer base {
+  * { border-color: var(--color-border); }
+  ::selection { background: color-mix(in oklab, #5EEAD4 35%, transparent); color: #F8FAFC; }
+}
+
+/* Grid background */
+@utility bg-grid {
+  background-image:
+    linear-gradient(to right, rgba(148,163,184,0.06) 1px, transparent 1px),
+    linear-gradient(to bottom, rgba(148,163,184,0.06) 1px, transparent 1px);
+  background-size: 56px 56px;
+}
+
+@utility bg-grid-fade {
+  mask-image: radial-gradient(ellipse 80% 60% at 50% 30%, black 40%, transparent 100%);
+}
+
+@utility glass {
+  background: linear-gradient(180deg, rgba(11,18,32,0.7), rgba(11,18,32,0.45));
+  backdrop-filter: blur(18px) saturate(140%);
+  border: 1px solid rgba(148,163,184,0.10);
+}
+
+@utility glass-strong {
+  background: linear-gradient(180deg, rgba(11,18,32,0.85), rgba(11,18,32,0.65));
+  backdrop-filter: blur(24px) saturate(160%);
+  border: 1px solid rgba(148,163,184,0.14);
+}
+
+@utility text-gradient {
+  background: linear-gradient(180deg, #F8FAFC 0%, #94A3B8 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility text-gradient-brand {
+  background: linear-gradient(90deg, #5EEAD4 0%, #60A5FA 50%, #8B5CF6 100%);
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+}
+
+@utility glow-teal {
+  box-shadow: 0 0 0 1px rgba(94,234,212,0.25), 0 20px 60px -20px rgba(94,234,212,0.45);
+}
+
+@utility ring-glow {
+  box-shadow:
+    0 0 0 1px rgba(148,163,184,0.10),
+    0 30px 80px -30px rgba(94,234,212,0.25),
+    0 20px 60px -30px rgba(139,92,246,0.25);
+}
+
+@keyframes float-slow {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-14px); }
+}
+@keyframes pulse-soft {
+  0%, 100% { opacity: 0.6; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.08); }
+}
+@keyframes gradient-shift {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+@keyframes dash-flow {
+  to { stroke-dashoffset: -40; }
+}
+@keyframes shimmer {
+  0% { background-position: -200% 0; }
+  100% { background-position: 200% 0; }
+}
+
+@utility animate-float-slow { animation: float-slow 7s ease-in-out infinite; }
+@utility animate-pulse-soft { animation: pulse-soft 3.5s ease-in-out infinite; }
+@utility animate-dash-flow { animation: dash-flow 2.5s linear infinite; }
+@utility animate-gradient-shift {
+  background-size: 200% 200%;
+  animation: gradient-shift 12s ease infinite;
+}
+
+@utility aurora {
+  position: absolute;
+  inset: -20%;
+  background:
+    radial-gradient(closest-side at 20% 30%, rgba(94,234,212,0.28), transparent 70%),
+    radial-gradient(closest-side at 80% 20%, rgba(96,165,250,0.22), transparent 70%),
+    radial-gradient(closest-side at 60% 80%, rgba(139,92,246,0.22), transparent 70%);
+  filter: blur(60px);
+  pointer-events: none;
+}

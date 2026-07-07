@@ -1,0 +1,7 @@
+export const REGISTRY_ADDRESS = "0x2f0750Bbb0A246059d80e94c454586a7F27a128e";
+
+export const DEFAULT_DECIMALS = 6;
+export const DEFAULT_SYMBOL = "ERC20";
+export const DEFAULT_CONFIDENTIAL_SYMBOL = "cERC20";
+
+export const SHIELD_APPROVAL_STRATEGY = "exact";
