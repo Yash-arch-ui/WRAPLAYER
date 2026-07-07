@@ -136,7 +136,7 @@ const pairs = await publicClient.readContract({
 
 ## Adding a New Token Pair
 
-To add a custom ERC-20 ↔ ERC-7984 pair (development, testing, or unofficial wrappers), edit `src/lib/token.ts`:
+To add a custom ERC-20 ↔ ERC-7984 pair (development, testing, or unofficial wrappers), edit `src/lib/registry.ts`:
 
 ```typescript
 // src/lib/token.ts
