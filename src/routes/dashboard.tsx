@@ -78,7 +78,7 @@ function DashboardPage() {
                 underlyingAddress: p.tokenAddress,
                 wrapperAddress: p.confidentialTokenAddress,
                 chain: "Sepolia",
-                balance: meta.balance ? (Number(meta.balance) / 10 ** (meta.decimals || 18)).toFixed(4) : "0.0000"
+                balance:parseFloat(meta.balance).toFixed(4)
               };
             } catch (err) {
               console.error(`Failed loading metadata for address ${p.tokenAddress}:`, err);
@@ -103,6 +103,8 @@ function DashboardPage() {
     }
 
     fetchOnChainDashboardData();
+    const interval = setInterval(fetchOnChainDashboardData,5000);
+    return () => clearInterval(interval);
   }, [sdk, userAddress]);
 
   // Construct live dynamic statistics grid array from chain/wallet telemetry

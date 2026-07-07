@@ -58,7 +58,7 @@ export async function getTokenInfo(
     return {
       name,
       decimals,
-      balance: formatUnits(rawBalance, decimals),
+      balance: formatUnits(rawBalance, Number(decimals)),
       allowance,
     };
   } catch (error) {
