@@ -6,7 +6,7 @@ import ConnectWallet from "../ConnectWallet";
 import { useAccount, useChainId, useSwitchChain } from "wagmi";
 import { sepolia, mainnet } from "wagmi/chains";
 import { AlertTriangle, Clock } from "lucide-react";
-
+import {toast} from "sonner";
 const APP_NAV = [
   { label: "Dashboard", to: "/dashboard" as const },
   { label: "Registry", to: "/registry" as const },
@@ -30,11 +30,26 @@ export function AppShell({ children }: { children: ReactNode }) {
 
   const [scrolled, setScrolled] = useState(false);
   useEffect(() => {
+  if (typeof window === "undefined") return;
+
+  const hasInjectedWallet =
+    typeof (window as any).ethereum !== "undefined";
+
+  if (!hasInjectedWallet && !sessionStorage.getItem("wallet-toast")) {
+    sessionStorage.setItem("wallet-toast", "shown");
+
+    toast.error(
+      "No wallet detected. Please install MetaMask or another injected wallet."
+    );
+  }
+}, []);
+  useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 12);
     onScroll();
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
+
 
   return (
     <div className="relative min-h-screen bg-background">
