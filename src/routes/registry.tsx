@@ -194,7 +194,7 @@ const getUnshieldAmount = () => {
     ),
     enabled: !!userAddress,
   });
-  const { data: tokenBalance = "0.0000" } = useQuery({
+  const { data: tokenBalance = "0.0000", refetch:refetchBalance, } = useQuery({
     queryKey: ['tokenBalance', p.tokenAddress, userAddress],
     queryFn: async () => {
       if (!userAddress) return "0.0000";
@@ -350,8 +350,9 @@ const getUnshieldAmount = () => {
         setIsShielding(true);
         try {
           await shield(getShieldAmount());
-          toast.success("Assets successfully shielded!");
           await refetch();
+          await refetchBalance();
+          toast.success("Assets successfully shielded");
         } catch (err) {
           console.error("Shield failed:", err);
           toast.error("SHIELDING FAILED");
@@ -368,6 +369,7 @@ const getUnshieldAmount = () => {
             setIsUnshielding(true);
             try {
               await unshield(getUnshieldAmount());
+              await refetchBalance();
               toast.success("Assets successfully unshielded!");
             } catch (err) {
               console.error("Unshield failed:", err);
