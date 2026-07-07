@@ -2,7 +2,7 @@
 
 > The canonical interface for the Zama Wrappers Registry — wrap, unwrap, and decrypt confidential ERC-7984 tokens on Sepolia,Mainnet.
 
-**Live Demo:** https://wraplayer-hfvgejkf6-yash-arch-uis-projects.vercel.app/
+**Live Demo:** https://wraplayer.vercel.app/
 **Network:** Ethereum Sepolia (chainId: 11155111) || Ethereum Mainnet 
 **Standard:** ERC-7984 Confidential Tokens via Zama FHEVM
 
