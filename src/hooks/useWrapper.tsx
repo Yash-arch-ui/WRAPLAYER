@@ -57,7 +57,7 @@ export  function useWrapper(confidentialTokenAddress?: `0x${string}`) {
       throw err;
     }
   };
-  */
+  */ // THIS IS A FUTURE UPGRADE CAN BE DONE IF WAS MENTIONED IN HACKATHON
 
   return { shield, unshield, isPending, error };
 }

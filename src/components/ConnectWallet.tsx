@@ -23,6 +23,7 @@ export default function WalletButton() {
       </div>
     );
   }
+  
     if(status === "reconnecting" || status === "connecting"){
     return (
       <div className="flex gap-2">

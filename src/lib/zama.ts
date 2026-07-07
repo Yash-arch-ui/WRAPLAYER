@@ -6,8 +6,8 @@ import { sepolia as sepoliaFhe } from "@zama-fhe/sdk/chains";
 
 export const zamaConfig = createConfig({
   chains: [sepoliaFhe],
-  wagmiConfig, // Hooks directly into your pure Wagmi architecture
+  wagmiConfig,
   relayers: {
-    [sepoliaFhe.id]: web(), // Spawns browser multi-threaded WASM workers automatically
+    [sepoliaFhe.id]: web(), 
   },
 });

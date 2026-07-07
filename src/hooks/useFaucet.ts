@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { useAccount, useWriteContract, usePublicClient } from "wagmi";
 import { parseAbi } from "viem";
-import { toast } from "sonner"; // Update this import if your Lovable UI uses a different toast library like "react-hot-toast"
+import { toast } from "sonner"; 
 
 export function useFaucet() {
   const { address, isConnected } = useAccount();
