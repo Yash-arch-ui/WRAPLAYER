@@ -465,7 +465,7 @@ bun dev            # or npm run dev
 
 ```env
 # .env.local
-` ``` `
+```
 
 ### Project structure
 
@@ -509,7 +509,6 @@ src/
 │   └── providers.tsx             # ZamaProvider + WagmiProvider + QueryClientProvider
 └── router.tsx                    # TanStack Router config
 ```
-
 
 ## Deployment
 
